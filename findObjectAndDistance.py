@@ -11,7 +11,7 @@ def distance():
     gpio.setmode(gpio.BOARD)
     gpio.setup(trig, gpio.OUT)
     gpio.setup(echo, gpio.IN)
-
+    
     #Ensure outout has no value
     gpio.output(trig, False)
     time.sleep(0.01)
@@ -33,10 +33,10 @@ def distance():
     #Convert time to distance
     distance = pulse_duration*17150
     distance = round(distance, 2)
-
+        
     #clear the output pins
     gpio.cleanup()
-
+        
     return distance
 
 
@@ -51,13 +51,20 @@ while True:
     
     img = cv2.rotate(img, cv2.ROTATE_180)
     
-    cv2.putText(img, "Distance : "+str(distance())+"cm", (20, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+    distance_sum = 0;
+    for i in range(0,10):
+        distance_sum = distance_sum + distance()
+    
+    avg_distance = distance_sum / 10
+    
+    cv2.putText(img, "Distance : "+str(avg_distance)+"cm", (20, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
       
     #show result to screen
     cv2.imshow("Distance Measurement",img)
 
     #Break out of the loop by q key
     if(cv2.waitKey(1) == ord("q")):
+        cv2.imwrite("objectAndDistance.jpg", img)
         break
 
 cap.release()
